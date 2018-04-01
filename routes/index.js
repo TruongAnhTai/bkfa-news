@@ -1,9 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const admin = require('./admin');
+const theloai = require('./theloai');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-module.exports = router;
+module.exports = (app) => {
+  app.use('/admin', admin)
+  app.use('/theloai', theloai)
+}
