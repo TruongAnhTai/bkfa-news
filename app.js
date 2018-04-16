@@ -4,6 +4,10 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+var session = require('express-session');
+var flash = require('connect-flash');
+var messages = require('express-messages')
+const validator = require('express-validator');
 const app = express();
 
 // view engine setup
@@ -15,8 +19,27 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(validator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'ma-bi-mat-tu-dat',
+  saveUninitialized: true,
+  resave: true
+}));
+
+// app.configure(function() {
+//   app.use(express.cookieParser('TTB'));
+//   app.use(express.session({ cookie: { maxAge: 60000 }}));
+//   app.use(flash());
+// });
+
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = messages(req, res);
+  next();
+});
+
 
 const mountRoutes = require('./routes');
 mountRoutes(app);

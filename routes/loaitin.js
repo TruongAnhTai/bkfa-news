@@ -13,9 +13,11 @@ router.get('/danhsach', function(req, res, next) {
         let error = req.flash('error');
         let success = req.flash('success')
         try {
-            const result = await client.query('SELECT * FROM theloai')
-            res.render('admin/theloai/danhsach',{
-                theloai: result.rows,
+            const theloai = await client.query('SELECT * FROM theloai')
+            const result = await client.query('SELECT * FROM loaitin l, theloai t WHERE l.idtheloai = t.idtheloai')
+            res.render('admin/loaitin/danhsach',{
+                loaitin: result.rows,
+                theloai: theloai.rows,
                 title: 'News_TTB Website',
                 error: error,
                 success: success
@@ -28,7 +30,8 @@ router.get('/danhsach', function(req, res, next) {
 
 
 router.post('/sua/:id', function(req, res, next) {
-    req.checkBody('suaten', 'Tên thể loại không hợp lệ, vui lòng kiểm tra lại').notEmpty();
+    req.checkBody('suaten', 'Tên loại tin không hợp lệ, vui lòng kiểm tra lại').notEmpty();
+    req.checkBody('suatheloai', 'Tên thể loại không hợp lệ, vui lòng kiểm tra lại').notEmpty();
     let errors = req.validationErrors();
 
     if(errors){
@@ -42,13 +45,13 @@ router.post('/sua/:id', function(req, res, next) {
     }else {
         const id = req.params.id;
         const ten = req.body.suaten;
+        const idtheloai = req.body.suatheloai;
         (async() => {
             const client = await pool.connect()
             try {
-                // const result = await client.query('SELECT * FROM theloai WHERE idtheloai =' + id)
-                await client.query("UPDATE theloai SET tentheloai = '" + ten + "' WHERE idtheloai = " + id)
+                await client.query("UPDATE loaitin SET tenloaitin = '"+ ten +"', idtheloai = '" + idtheloai + "' WHERE idloaitin = " + id)
                 req.flash('success', 'Sửa thành công');
-                res.redirect("/theloai/danhsach")
+                res.redirect("/loaitin/danhsach")
             } finally {
                 client.release()
             }
@@ -57,7 +60,8 @@ router.post('/sua/:id', function(req, res, next) {
 });
 
 router.post('/them', function(req, res, next) {
-    req.checkBody('themten', 'Tên thể loại không hợp lệ, vui lòng kiểm tra lại').notEmpty();
+    req.checkBody('themten', 'Tên loại tin không hợp lệ, vui lòng kiểm tra lại').notEmpty();
+    req.checkBody('theloai', 'Chưa chọn thể loại, vui lòng kiểm tra lại').notEmpty();
     let errors = req.validationErrors();
 
     if(errors){
@@ -70,14 +74,15 @@ router.post('/them', function(req, res, next) {
         res.redirect('back');
     }else {
         const ten = req.body.themten;
+        const idtheloai = req.body.theloai;
         (async() => {
             const client = await pool.connect()
             try{
-                const result = await client.query('SELECT MAX(idtheloai) FROM theloai')
+                const result = await client.query('SELECT MAX(idloaitin) FROM loaitin')
                 // console.log(result.rows[0].max)
-                await client.query("INSERT INTO theloai(idtheloai, tentheloai) VALUES("+ result.rows[0].max +"+1, '" + ten + "')")
+                await client.query("INSERT INTO loaitin(idloaitin, tenloaitin, idtheloai) VALUES("+ result.rows[0].max +"+1, '" + ten + "', '"+ idtheloai +"')")
                 req.flash('success', 'Thêm thành công');
-                res.redirect("/theloai/danhsach")
+                res.redirect("/loaitin/danhsach")
             } finally{
                 client.release()
             }
@@ -90,9 +95,9 @@ router.post('/xoa/:id', function(req, res, next) {
     (async() => {
         const client = await pool.connect()
         try {
-            await client.query("DELETE FROM theloai WHERE idtheloai = '" + id +"';  DELETE FROM loaitin WHERE idtheloai = '" + id +"'")
+            await client.query("DELETE FROM loaitin WHERE idloaitin = " + id)
             req.flash('success', 'Xóa thành công')
-            res.redirect("/theloai/danhsach")
+            res.redirect("/loaitin/danhsach")
         } finally {
             client.release()
         }
