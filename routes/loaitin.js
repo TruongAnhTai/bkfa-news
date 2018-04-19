@@ -51,7 +51,7 @@ router.post('/sua/:id', function(req, res, next) {
             try {
                 await client.query("UPDATE loaitin SET tenloaitin = '"+ ten +"', idtheloai = '" + idtheloai + "' WHERE idloaitin = " + id)
                 req.flash('success', 'Sửa thành công');
-                res.redirect("/loaitin/danhsach")
+                res.redirect("/admin/loaitin/danhsach")
             } finally {
                 client.release()
             }
@@ -82,7 +82,7 @@ router.post('/them', function(req, res, next) {
                 // console.log(result.rows[0].max)
                 await client.query("INSERT INTO loaitin(idloaitin, tenloaitin, idtheloai) VALUES("+ result.rows[0].max +"+1, '" + ten + "', '"+ idtheloai +"')")
                 req.flash('success', 'Thêm thành công');
-                res.redirect("/loaitin/danhsach")
+                res.redirect("/admin/loaitin/danhsach")
             } finally{
                 client.release()
             }
@@ -97,7 +97,7 @@ router.post('/xoa/:id', function(req, res, next) {
         try {
             await client.query("DELETE FROM loaitin WHERE idloaitin = " + id)
             req.flash('success', 'Xóa thành công')
-            res.redirect("/loaitin/danhsach")
+            res.redirect("/admin/loaitin/danhsach")
         } finally {
             client.release()
         }

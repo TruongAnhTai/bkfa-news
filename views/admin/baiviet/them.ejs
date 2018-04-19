@@ -1,0 +1,107 @@
+<%include ../layout/header%>
+    <script src="/ckeditor/ckeditor.js"></script>
+    <!-- <script>
+         CKEditor.replace('noidung');
+    </script> -->
+    </head>
+
+    <body>
+        <div id="wrapper">
+            <%include ../layout/menu%>
+                <div id="page-wrapper">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="page-header">Tin Tức</h1>
+                            <textarea rows="16" name="txtDesc" id="txtDesc" cols="147"></textarea>
+                            <script type="text/javascript">
+                                CKEDITOR.replace( 'txtDesc' );
+                            </script>
+                        </div>
+                    </div>
+                    <% if (error.length > 0) { %>
+                        <div class="alert alert-danger">
+                            <%= error %>
+                        </div>
+                        <% } else if(success.length > 0){ %>
+                            <div class="alert alert-success">
+                                <%= success %>
+                            </div>
+                            <% } %>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-block">
+                                                <form action="admin/baiviet/them" method="POST" enctype="multipart/form-data">
+                                                    <div class="form-group">
+                                                        <label>Tiêu đề</label>
+                                                        <input class="form-control" name="tieude" placeholder="Nhập vào tiêu đề"></input>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Tác giả</label>
+                                                        <input class="form-control" name="tacgia" placeholder="Tác giả"></input>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Loại tin</label>
+                                                        <input class="form-control" name="loaitin" placeholder="Nhập vào tiêu đề"></input>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Tóm tắt</label>
+                                                        <textarea name="tomtat" class="form-control" rows="5"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Nội dung</label>
+                                                        <textarea name="noidung" class="form-control ckeditor" rows="10" id="noidung"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Ảnh</label>
+                                                        <br>
+                                                        <label>
+                                                            <span class="text-primary btn btn-lg btn-outline-primary"><i class="fa fa-camera"></i> Chọn ảnh</span>
+                                                            <p id="filename" class="d-inline"></p>
+                                                            <input type="file" name="anh" style="display: none;">
+                                                        </label>
+                                                        <div style="width: 50vw;" id="imgupload">
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success btn-lg float-right" id="btnSubmit">Thêm <i class="fa fa-paper-plane"></i></button>
+                                                    <button type="reset" class="btn btn-lg float-right btn-secondary">Làm mới <i class="fa fa-undo"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                </div>
+        </div>
+        <%include ../layout/js%>
+            <!-- DataTables JavaScript -->
+            <script src="/admin/vendor/datatables/js/jquery.dataTables.min.js"></script>
+            <script src="/admin/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+            <script src="/admin/vendor/datatables-responsive/dataTables.responsive.js"></script>
+            <!-- Custom Theme JavaScript -->
+            <script src="/admin/dist/js/sb-admin-2.js"></script>
+            <!-- ckeditor -->
+            
+            <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+            <script>
+            $(document).ready(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+                $('#dataTables-example').DataTable({
+                    responsive: true
+                });
+                $("input[name=file]").change(function() {
+                    $("#filename").html($("input[name=file]").val());
+                });
+                $("input[name=anh]").change(function(e) {
+                    var file = e.originalEvent.srcElement.files[e.originalEvent.srcElement.files.length - 1];
+                    var img = document.createElement("img");
+                    var reader = new FileReader();
+                    reader.onloadend = function() {
+                        img.src = reader.result;
+                    }
+                    reader.readAsDataURL(file);
+                    $("#imgupload").html(img);
+                    img.width = "200";
+                });
+            });
+            </script>
+    </body>

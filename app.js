@@ -8,6 +8,9 @@ var session = require('express-session');
 var flash = require('connect-flash');
 var messages = require('express-messages')
 const validator = require('express-validator');
+
+var func = require('./config/functions');
+
 const app = express();
 
 // view engine setup
