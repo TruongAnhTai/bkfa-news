@@ -1,8 +1,9 @@
 const Router = require('express-promise-router')
-const validator = require('express-validator');
+var moment = require('moment');
 const router = new Router()
 const pool = require('../model')
 var bodyParser = require('body-parser')
+const validator = require('express-validator');
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 router.use(bodyParser.urlencoded({ extended: false }))
 
@@ -81,11 +82,14 @@ router.get('/them', function(req, res, next){
     })().catch(e => console.log(e.stack))
 });
 
-router.post('/them', function(req, res, next) {
-    req.checkBody('themten', 'Tên loại tin không hợp lệ, vui lòng kiểm tra lại').notEmpty();
-    req.checkBody('theloai', 'Chưa chọn thể loại, vui lòng kiểm tra lại').notEmpty();
+router.post('/thembv', function(req, res, next) {
+    req.checkBody('tieude', 'Tiêu đề bài viết không hợp lệ, vui lòng kiểm tra lại!').notEmpty();
+    req.checkBody('tacgia', 'Bài viết của ai?').notEmpty();
+    req.checkBody('loaitin', 'Chưa chọn loại tin!').notEmpty();
+    req.checkBody('tomtat', 'Tóm tắt bài viết không hợp lệ, vui lòng kiểm tra lai!').notEmpty();
+    req.checkBody('noidung', 'Nội dung bài viết không hợp lệ, vui lòng kiểm tra lai!').notEmpty();
+    req.checkBody('anh', 'Cần chọn ảnh chủ đề bài viết. OK.').notEmpty();
     let errors = req.validationErrors();
-
     if(errors){
         let messages = [];
         errors.forEach(function(error){
@@ -95,20 +99,26 @@ router.post('/them', function(req, res, next) {
         req.flash('error', messages);
         res.redirect('back');
     }else {
-        const ten = req.body.themten;
-        const idtheloai = req.body.theloai;
+        const tieude = req.body.tieude;
+        const tacgia = req.body.tacgia;
+        const idloaitin = req.body.loaitin;
+        const tomtat = req.body.tomtat;
+        const noidung = req.body.noidung;
+        const anh = req.body.anh;
+
         (async() => {
             const client = await pool.connect()
             try{
-                const result = await client.query('SELECT MAX(idloaitin) FROM loaitin')
+                const result = await client.query('SELECT MAX(idbaiviet) FROM baiviet')
                 // console.log(result.rows[0].max)
-                await client.query("INSERT INTO loaitin(idloaitin, tenloaitin, idtheloai) VALUES("+ result.rows[0].max +"+1, '" + ten + "', '"+ idtheloai +"')")
+                await client.query("INSERT INTO baiviet(idbaiviet, tacgia, tieude, tomtat, noidung, urlanh, luotxem, ngaydang, idloaitin) VALUES("+ result.rows[0].max +"+1, '" + tacgia + "', '" + tieude + "', '" + tomtat + "', '" + noidung + "', 'a.png', '0', '"+ moment().format() +"', '" + idloaitin + "')")
                 req.flash('success', 'Thêm thành công');
                 res.redirect("/admin/baiviet/them")
             } finally{
                 client.release()
             }
         })().catch(e => console.log(e.stack))
+
     }
 });
 

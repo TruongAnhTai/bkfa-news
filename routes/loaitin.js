@@ -1,10 +1,11 @@
 const Router = require('express-promise-router')
-const validator = require('express-validator');
 const router = new Router()
 const pool = require('../model')
 var bodyParser = require('body-parser')
+const validator = require('express-validator');
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 router.use(bodyParser.urlencoded({ extended: false }))
+
 
 /* GET users listing. */
 router.get('/danhsach', function(req, res, next) {
